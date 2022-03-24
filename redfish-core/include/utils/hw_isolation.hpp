@@ -284,6 +284,11 @@ inline void
                     std::to_string(enabledPropVal ? 1 : 0),
                     "HardwareIsolation");
             }
+            else if (strcmp(dbusError->name, "xyz.openbmc_project.Common.Error."
+                                             "InsufficientPermission") == 0)
+            {
+                messages::resourceCannotBeDeleted(aResp->res);
+            }
             else
             {
                 BMCWEB_LOG_ERROR(
