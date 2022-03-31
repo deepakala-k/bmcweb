@@ -124,9 +124,9 @@ inline void
         if (strcmp(dbusError->name, "xyz.openbmc_project.Common.Error."
                                     "InvalidArgument") == 0)
         {
-            messages::propertyValueIncorrect(
-                aResp->res, "@odata.id",
-                std::to_string(enabledPropVal ? 1 : 0));
+            messages::propertyValueExternalConflict(
+                aResp->res, "Enabled",
+                std::to_string(static_cast<int>(enabledPropVal)));
         }
         else if (strcmp(dbusError->name, "xyz.openbmc_project.Common.Error."
                                          "NotAllowed") == 0)
@@ -150,19 +150,7 @@ inline void
         {
             BMCWEB_LOG_ERROR(
                 "DBus Error is unsupported so returning as Internal Error");
-            // The error code (53 == Invalid request descriptor) will be
-            // returned if dbus doesn't contains "isolated_hw_entry" for
-            // the given resource i.e it is not isolated to deisolate.
-            // This case might occur when resource are in the certain state
-            if (ec.value() == 53)
-            {
-                messages::propertyValueConflict(aResp->res, "Enabled",
-                                                "Status.State");
-            }
-            else
-            {
-                messages::internalError(aResp->res);
-            }
+            messages::internalError(aResp->res);
         }
         return;
     },
